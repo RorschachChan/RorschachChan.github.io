@@ -1,0 +1,1612 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/smile_32x32_bluerebbit.png?v=5.1.3">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/smile_32x32_bluerebbit.png?v=5.1.3">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="zabbix,监控技术," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Chris Chan's BLOG" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="把监控的手伸的再长一点...">
+<meta name="keywords" content="zabbix,监控技术">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zabbix-proxy的搭建和配置全过程">
+<meta property="og:url" content="http://yoursite.com/2018/01/26/Zabbix-proxy的搭建和配置全过程/index.html">
+<meta property="og:site_name" content="Chris Chan&#39;s BLOG">
+<meta property="og:description" content="把监控的手伸的再长一点...">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/images/proxy1.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy2.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy3.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy4.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy5.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy6.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy7.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy8.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy9.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy10.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy11.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy12.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy13.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy15.png">
+<meta property="og:image" content="http://yoursite.com/images/proxy14.png">
+<meta property="og:updated_time" content="2018-01-26T07:06:37.849Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zabbix-proxy的搭建和配置全过程">
+<meta name="twitter:description" content="把监控的手伸的再长一点...">
+<meta name="twitter:image" content="http://yoursite.com/images/proxy1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.3',
+    sidebar: {"position":"right","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/01/26/Zabbix-proxy的搭建和配置全过程/"/>
+
+
+
+
+
+  <title>Zabbix-proxy的搭建和配置全过程 | Chris Chan's BLOG</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail">
+    <div class="headband"></div>
+
+	<a href="https://github.com/RorschachChan" class="github-corner" aria-label="View source on Github"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#64CEAA; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+	
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Chris Chan's BLOG</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">那些在阳光下挥洒青春的日子啊！</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-guestbook">
+          <a href="/guestbook" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-commenting"></i> <br />
+            
+            留言
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-照片">
+          <a href="/album" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-camera"></i> <br />
+            
+            照片
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-commonweal">
+          <a href="/404/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br />
+            
+            公益404
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/01/26/Zabbix-proxy的搭建和配置全过程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Chris Chan">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Chris Chan's BLOG">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Zabbix-proxy的搭建和配置全过程</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-26T14:27:04+08:00">
+                2018-01-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/工作与技术/" itemprop="url" rel="index">
+                    <span itemprop="name">工作与技术</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2018/01/26/Zabbix-proxy的搭建和配置全过程/" class="leancloud_visitors" data-flag-title="Zabbix-proxy的搭建和配置全过程">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">热度&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+				 <span>℃</spam>
+             </span>
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2,238
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+              <div class="post-description">
+                  把监控的手伸的再长一点...
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <script src="\assets\js\APlayer.min.js"> </script><h1><span id="zabbix-proxy的用途和构建图">Zabbix-proxy的用途和构建图</span></h1><p>Zabbix-server是建立在金山云的，现在需要监控阿里云的redis，但是阿里云跟金山云之间通信是无法走内网的，如果直接让zabbix-server与redis直接联系，一旦公网的信息被截获的话，整个金山区的zabbix可能都会遭殃，那么既然有这种“远程监控+当监控的位置通信不便”的需求，就搭建一个zabbix-proxy来解决问题。</p>
+<p>Zabbix-proxy是一个监控代理服务器，它收集监控到的数据，先存放在缓冲区，保存的时间可以通过配置文件设定，然后再传送到zabbix-server，这样也大大减缓了zabbix-server的压力，<font color="red">注意！监控代理需要一个单独的数据库，因为它的数据库表名与zabbix-server的数据库表名是一样的，如果不单独分开，后果就是数据错乱。</font></p>
+<p>有人看到这里可能问了，说来说去你的zabbix-proxy跟阿里的redis依旧是走公网的啊！虽然这样也是走公网，我现在只需要配置一个防火墙规则来让他俩保证通信即可，通过防火墙来提升安全系数。架构如图：<br><img src="/images/proxy1.png" alt=""></p>
+<h1><span id="安装mysql-55">安装Mysql 5.5</span></h1><p>Zabbix-proxy机器情况：金山云<code>centos 6.5</code>，安装zabbix版本：<code>3.0.8</code><br>    <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@js-online-cjhmq-002 opt]yum list installed | grep mysql    #列出已经安装过的mysql情况</span><br><span class="line">[root@js-online-cjhmq-002 opt]yum -y remove mysql-libs.x86_64      #把之前的mysql连根拔起</span><br><span class="line">[root@js-online-cjhmq-002 opt]# rpm -ivh http://repo.mysql.com/yum/mysql-5.5-community/el/6/x86_64/mysql-community-release-el6-5.noarch.rpm</span><br><span class="line">Retrieving http:<span class="comment">//repo.mysql.com/yum/mysql-5.5-community/el/6/x86_64/mysql-community-release-el6-5.noarch.rpm</span></span><br><span class="line">Preparing...                ########################################### [100%]</span><br><span class="line">  	1:mysql-community-release########################################### [100%]</span><br><span class="line">[root@js-online-cjhmq-002 opt]groupadd zabbix                       #新建用户组zabbix</span><br><span class="line">[root@js-online-cjhmq<span class="number">-002</span> opt]useradd -g zabbix -u <span class="number">808</span> -m zabbix</span><br><span class="line">#-g：指定用户所属的群组；</span><br><span class="line">#-u：指定用户id。</span><br><span class="line">#-m：自动建立用户的登入目录；</span><br></pre></td></tr></table></figure></p>
+<p>现在要修改一下<code>/etc/yum.repos.d/mysql-community.repo</code>这个文件，将5.5的enabled改为1,5.6的enabled改为0：<br>    <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"># Enable to use MySQL 5.5</span><br><span class="line">[mysql55-community]</span><br><span class="line">name=MySQL <span class="number">5.5</span> Community Server</span><br><span class="line">baseurl=http:<span class="comment">//repo.mysql.com/yum/mysql-5.5-community/el/6/$basearch/</span></span><br><span class="line">enabled=1    #这里改成1</span><br><span class="line">gpgcheck=<span class="number">1</span></span><br><span class="line"> </span><br><span class="line">gpgkey=file:<span class="regexp">/etc/</span>pki/rpm-gpg/RPM-GPG-KEY-mysql</span><br><span class="line"># Enable to use MySQL 5.6</span><br><span class="line">[mysql56-community]</span><br><span class="line">name=MySQL <span class="number">5.6</span> Community Server</span><br><span class="line">baseurl=http:<span class="comment">//repo.mysql.com/yum/mysql-5.6-community/el/6/$basearch/</span></span><br><span class="line">enabled=0    #这里改成0</span><br><span class="line">gpgcheck=<span class="number">1</span></span><br><span class="line">gpgkey=file:<span class="regexp">/etc/</span>pki/rpm-gpg/RPM-GPG-KEY-mysql</span><br></pre></td></tr></table></figure></p>
+<p>然后执行<code>yum install mysql-community-client mysql-community-devel mysql-community-server php-mysql</code>， 安装服务端和客户端，安装完毕之后可以<code>mysql -h127.0.0.1</code>看一下。<br><img src="/images/proxy2.png" alt=""></p>
+<p>安装完毕之后，修改一下<code>/etc/my.cnf</code>，如图：<br>    <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">innodb_buffer_pool_size = 512M        #这个根据服务器性能填写，这个机器是2核2G的，所以我拿出半个G给mysql</span><br><span class="line">innodb_file_per_table=1               #这个是新增的字段，设置InnoDB为独立表空间模式，每个数据库的每个表都会生成一个数据目录</span><br></pre></td></tr></table></figure></p>
+<p>mysql安装完毕之后，我们还要导表进去，如图：<br>    <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">service mysqld start</span><br><span class="line">mysqladmin -uroot password <span class="string">'123456'</span></span><br><span class="line">mysql -uroot -p123456 -e <span class="string">'create database zabbix_proxy character set utf8;'</span></span><br><span class="line">mysql -uroot -p123456 -e <span class="string">"grant all privileges on zabbix_proxy.* to zabbix@localhost identified by 'zabbix';"</span></span><br><span class="line">mysql -uroot -p123456 -e <span class="string">"flush privileges;"</span></span><br><span class="line">mysql -uzabbix -pzabbix zabbix_proxy &lt;<span class="regexp">/解压路径/</span>zabbix<span class="number">-3.0</span><span class="number">.8</span>/database/mysql/schema.sql</span><br></pre></td></tr></table></figure></p>
+<p>至此，mysql部分已经全部搞定。</p>
+<h1><span id="安装zabbix-proxy">安装Zabbix-proxy</span></h1><p>先去<code>https://sourceforge.net/projects/zabbix/files/ZABBIX%20Latest%20Stable/3.0.8/</code>下载<code>zabbix-3.0.8.tar.gz</code>，上传到proxy服务器里。<br>    <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf zabbix<span class="number">-3.0</span><span class="number">.8</span>.tar.gz</span><br><span class="line">./configure --prefix=<span class="regexp">/usr/</span>local/zabbix<span class="number">-3.0</span><span class="number">.8</span>  --sysconfdir=<span class="regexp">/etc/</span>zabbix  --enable-proxy  --enable-agent  --enable-ipv6  --<span class="keyword">with</span>-mysql=<span class="regexp">/usr/</span>bin/mysql_config  --<span class="keyword">with</span>-net-snmp  --<span class="keyword">with</span>-libcurl  --<span class="keyword">with</span>-openipmi  --<span class="keyword">with</span>-unixodbc  --<span class="keyword">with</span>-ldap  --<span class="keyword">with</span>-ssh2  --enable-java</span><br></pre></td></tr></table></figure></p>
+<p>如果出现了<code>configure: error: Invalid LDAP directory - unable to find ldap.h</code>，解决方法就是：<br>    <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install openldap*</span><br></pre></td></tr></table></figure></p>
+<h1><span id="zabbix-proxy的配置">Zabbix-proxy的配置</span></h1><p>打开<code>/etc/zabbix/zabbix_proxy.conf</code>，需要修改几个地方：<br>    <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">ProxyMode=0                                   #0是主动模式，1是被动模式</span><br><span class="line">Server=A.B.C.D                #这里填写zabbix-server的内网IP</span><br><span class="line">Hostname=J.Q.K.A              #这里要与/etc/hosts下的名字一模一样</span><br><span class="line">LogFile=<span class="regexp">/tmp/</span>zabbix_proxy.log</span><br><span class="line">DBHost=localhost</span><br><span class="line">DBName=zabbix_proxy</span><br><span class="line">DBUser=zabbix</span><br><span class="line">DBPassword=zabbix</span><br><span class="line">ConfigFrequency=120              #主动去server端去拉去配置更新的频率120秒一次</span><br><span class="line">DataSenderFrequency=60              #发送采集的监控数据到服务器端，默认是1秒，我们一分钟发送一次</span><br><span class="line">#ProxyLocalBuffer=0                #ProxyLocalBuffer表示数据传递给server之后还要在proxy里保存多久（单位为小时）。如果注释就是代表不删除。</span><br><span class="line">#ProxyOfflineBuffer=1               #ProxyOfflineBuffer表示数据没有传递给server的话还要在proxy里保存多久（单位为小时）。如果注释就是代表不删除。</span><br></pre></td></tr></table></figure></p>
+<p>然后就是启动proxy:<br>    <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"># /usr/local/zabbix_proxy/sbin/zabbix_proxy</span><br></pre></td></tr></table></figure></p>
+<p>用netstat查看一下端口和进程是否都OK：<br><img src="/images/proxy3.png" alt=""></p>
+<h1><span id="zabbix-server端的配置">Zabbix-server端的配置</span></h1><p>登入zabbix-server的网页，如图添加proxy：<br><img src="/images/proxy4.png" alt=""></p>
+<p>点击“create proxy”之后，就对应填写资料吧：<br><img src="/images/proxy5.png" alt=""></p>
+<p><img src="/images/proxy6.png" alt=""></p>
+<p>这里对上面的几个选项多说几句：<br>    <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Connections to proxy：服务器如何连接到被动代理：无加密（默认），使用PSK（预共享密钥）或证书。</span><br><span class="line">Connections <span class="keyword">from</span> proxy：从活动代理中选择允许的连接类型。 可以同时选择几种连接类型（用于测试和切换到其他连接类型）。 默认为“无加密”。</span><br><span class="line">#点击Certificate之后又两个参数：</span><br><span class="line">Issuer：允许颁发证书。 证书首先通过CA（认证机构）验证。 如果CA有效，则由CA签名，则可以使用Issuer字段来进一步限制允许的CA。 该字段是可选的，如果您的Zabbix安装使用多个CA的证书，则使用该字段。</span><br><span class="line">Subject：允许的证书。 证书首先通过CA验证。 如果它有效，由CA签名，则主题字段可用于仅允许Subject字符串的一个值。 如果此字段为空，则接受由配置的CA签名的任何有效证书。	</span><br><span class="line">#点击PSK之后又两个参数：</span><br><span class="line">PSK identity：预共享密钥身份字符串。</span><br><span class="line">PSK ： 预共享密钥（hex-string）。 如果Zabbix使用mbed TLS（PolarSSL）库，Zabbix将使用GnuTLS或OpenSSL库，<span class="number">64</span>位十六进制（<span class="number">32</span>字节PSK），最大长度为<span class="number">512</span>位十六进制数（<span class="number">256</span>字节PSK）。 示例：<span class="number">1</span>f87b595725ac58dd977beef14b97461a7c1045b9a1c963065002c5473194952</span><br></pre></td></tr></table></figure></p>
+<p>保存之后，就在zabbix-server用<code>zabbix-get</code>去ping一下proxy，看看返回值是否是1，如果是<code>zabbix_get [18290]: Check access restrictions in Zabbix agent configuration</code>，就检查一下刚才的hostname等值是否正确。<br><img src="/images/proxy7.png" alt=""></p>
+<h1><span id="被监控机器的配置">被监控机器的配置</span></h1><p>在被监控的阿里云redis里安装<code>zabbix-agent</code>，在<code>agentd.conf</code>里把<code>hostname</code>写成自己在<code>/etc/hosts</code>里的<code>hostname</code>，<code>Server</code>地址和<code>ServerActive</code>的地址都要写成proxy的外网IP地址。保存之后启动agent进程，这个时候在proxy端是可以通过<code>zabbix_get</code>得到这台被监控机器的值，如图：<br><img src="/images/proxy8.png" alt=""></p>
+<p>在Zabbix-Server的WEB界面里，为阿里云的redis新建一个host，<code>Agent interface</code>那里填写被监控的机器IP，端口是10050，<code>Monitored by proxy</code>的地方要写成刚刚添加的proxy。如图：<br><img src="/images/proxy9.png" alt=""></p>
+<p>上面已经提到过，用proxy模式并且zabbix的客户端也是主动模式提交数据，这样能大大提高采集效率，降低zabbix服务器端和proxy端的压力。现在我们希望添加的还是使用zabbix_agent的方式，新加到zabbix_proxy里面的主机使用<code>zabbix_agent（active）</code>的方式。注意在模板的克隆要选择<code>full clone</code>，不要选“clone”，那样的话就仅仅是把iterm的名字克隆过去而已，如图：<br><img src="/images/proxy10.png" alt=""></p>
+<p>然后在items选择具体的类型，根据需要，想改那个改哪个，如图，注意！我图里写的是<code>Zabbix agent</code>，但是type这里选择<code>Zabbix agent (active)</code>。<br><img src="/images/proxy11.png" alt=""></p>
+<p>改完之后，保存一下，就会看到type都是<code>zabbix agent（active）</code>了。<br><img src="/images/proxy12.png" alt=""></p>
+<p>最后在host里把这个机器添加到proxy的模板里，如图：<br><img src="/images/proxy13.png" alt=""></p>
+<p>在Administration的Proxies也看到效果了，如果server与proxy没有正确连接的话，last seen的地方会是<code>--</code>，如果连接的话就会显示具体时间，如图:<br><img src="/images/proxy15.png" alt=""></p>
+<p>返回到hosts里，查看那个被监控的redis机器也成功被监控到了，<code>ZBX</code>已经变绿。如图：<br><img src="/images/proxy14.png" alt=""></p>
+<p>因为我们线上环境基本都是用的zabbix_proxy方式是active方式，然后客户端也是active方式，既然都是active方式，那么zabbix_agent的Hostname就很重要，打个比方如果再zabbix_server端把一个主机的Hostname改了，然后客户端那边也改了，服务端和客户端的Hostname是统一的，但是proxy那里还记录的是旧Hostname，然后就会在proxy日志里面看到下面一条：<br>    <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cannot send list <span class="keyword">of</span> active checks to <span class="string">"proxy内网IP地址"</span>: host [virt_proxy内网IP地址] not found</span><br></pre></td></tr></table></figure></p>
+<p>proxy主动模式下，<code>ConfigFrequency</code>默认的是3600秒一小时，显然有点大了，可以适当的调低一下，如10分钟或者几分钟什么的。然后出现问题多看看zabbix服务端和proxy的日志，对症下药。</p>
+<h1><span id="参考资料">参考资料</span></h1><p><a href="http://www.51niux.com/?id=156" target="_blank" rel="noopener">http://www.51niux.com/?id=156</a><br><a href="http://www.cnblogs.com/wangxiaoqiangs/p/5336630.html" target="_blank" rel="noopener">http://www.cnblogs.com/wangxiaoqiangs/p/5336630.html</a></p>
+
+      
+    </div>
+    
+    
+    
+	
+	
+	  <div>
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------This article is over!<i class="fa fa-paw"></i>Thanks for reading!-------------</div>
+    
+</div>
+	  </div>
+	
+	
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>感谢您请我喝咖啡！(o´ω`o)</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>打赏</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="/images/wechatpay.jpg" alt="Chris Chan 微信支付"/>
+        <p>微信支付</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="/images/zhifubaopay.jpg" alt="Chris Chan 支付宝"/>
+        <p>支付宝</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+
+    <footer class="post-footer">
+		   
+		<div>    
+			
+			<ul class="post-copyright">
+				<li class="post-copyright-link">
+					<strong>本文作者：</strong>
+					<a href="/" title="欢迎访问 Chris Chan 的个人博客">Chris Chan</a>
+				</li>
+
+				<li class="post-copyright-link">
+					<strong>本文标题：</strong>
+					<a href="http://yoursite.com/2018/01/26/Zabbix-proxy的搭建和配置全过程/" title="Zabbix-proxy的搭建和配置全过程">Zabbix-proxy的搭建和配置全过程</a>
+				</li>
+
+				<li class="post-copyright-date">
+					<strong>发布时间：</strong>2018年1月26日 - 14时01分
+				</li>  
+
+				<li class="post-copyright-license">
+					<strong>版权声明： </strong>
+					本文由 Chris Chan 原创，采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.zh" rel="license" target="_blank">保留署名-非商业性使用-禁止演绎 4.0-国际许可协议</a> </br>转载请保留以上声明信息！
+				</li>
+			</ul>
+			
+		</div>
+	
+      
+        <div class="post-tags">
+          
+            <a href="/tags/zabbix/" rel="tag"><i class="fa fa-tag"></i> zabbix</a>
+          
+            <a href="/tags/监控技术/" rel="tag"><i class="fa fa-tag"></i> 监控技术</a>
+          
+        </div>
+      
+
+      
+      
+        <div class="post-widgets">
+        
+          <div class="wp_rating">
+			<div style="color: rgba(0, 0, 0, 0.75); font-size:13px; letter-spacing:3px">(&gt;欢迎各位看官给我的这篇文章打个分！&lt;)</div>
+            <div id="wpac-rating"></div>
+          </div>
+        
+
+        
+
+        
+        </div>
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/25/阿里云服务器更改时区为utc/" rel="next" title="centos服务器更改系统时间">
+                <i class="fa fa-chevron-left"></i> centos服务器更改系统时间
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/26/一个连接两个文件的python脚本/" rel="prev" title="一个连接两个文件的python脚本">
+                一个连接两个文件的python脚本 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_fav">收藏夹</a>
+<a class="jiathis_button_copy">复制网址</a>
+<a class="jiathis_button_email">邮件</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_qzone">QQ空间</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a class="jiathis_button_share">一键分享</a>
+
+<a href="http://www.jiathis.com/share?uid=2140465" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+  data_track_clickback:true,
+  summary:"",
+  shortUrl:false,
+  hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zNzkyNC8xNDQ1NA=="></div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+			<a href="/" class="site-author-image" rel="start" style="border:none">
+              <img class="site-author-image" itemprop="image"
+                src="/images/avatar.jpg"
+                alt="Chris Chan" />
+			</a>
+            
+              <p class="site-author-name" itemprop="name">Chris Chan</p>
+              <p class="site-description motion-element" itemprop="description">生活就是等待戈多</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">179</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                
+                  <span class="site-state-item-count">144</span>
+                  <span class="site-state-item-name">标签</span>
+                
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          <div class="links-of-author motion-element">
+            
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/RorschachChan" target="_blank" title="GitHub">
+                    
+                      <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:chenx1242@163.com" target="_blank" title="E-Mail">
+                    
+                      <i class="fa fa-fw fa-globe"></i>E-Mail</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/Chloe1987A" target="_blank" title="Twitter">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Twitter</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://zh-cn.facebook.com/people/Chris-Chan/100008372822899" target="_blank" title="FB Page">
+                    
+                      <i class="fa fa-fw fa-globe"></i>FB Page</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://segmentfault.com/u/chenx124208739" target="_blank" title="Segmentfault">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Segmentfault</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://weibo.com/chenx1242" target="_blank" title="Weibo">
+                    
+                      <i class="fa fa-fw fa-globe"></i>Weibo</a>
+                </span>
+              
+            
+          </div>
+
+          
+          
+
+          
+          
+            <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+              <div class="links-of-blogroll-title">
+                <i class="fa  fa-fw fa-link"></i>
+                Links
+              </div>
+              <ul class="links-of-blogroll-list">
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://liubin.nanshapo.com" title="Docker大神" target="_blank">Docker大神</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://imququ.com" title="屈大神的博客" target="_blank">屈大神的博客</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.imsxm.com" title="成都没有派对" target="_blank">成都没有派对</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://highdb.com" title="Arstercz" target="_blank">Arstercz</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="https://www.jianshu.com/u/128d8abded39" title="Atlas大神的简书" target="_blank">Atlas大神的简书</a>
+                  </li>
+                
+                  <li class="links-of-blogroll-item">
+                    <a href="http://www.capjsj.cn" title="成航先森" target="_blank">成航先森</a>
+                  </li>
+                
+              </ul>
+			<div id="days"></div>
+</script>
+<script language="javascript">
+function show_date_time(){
+window.setTimeout("show_date_time()", 1000);
+BirthDay=new Date("12/01/2017 8:00:00");
+today=new Date();
+timeold=(today.getTime()-BirthDay.getTime());
+sectimeold=timeold/1000
+secondsold=Math.floor(sectimeold);
+msPerDay=24*60*60*1000
+e_daysold=timeold/msPerDay
+daysold=Math.floor(e_daysold);
+e_hrsold=(e_daysold-daysold)*24;
+hrsold=setzero(Math.floor(e_hrsold));
+e_minsold=(e_hrsold-hrsold)*60;
+minsold=setzero(Math.floor((e_hrsold-hrsold)*60));
+seconds=setzero(Math.floor((e_minsold-minsold)*60));
+document.getElementById('days').innerHTML="本博客已运行"+daysold+"天"+hrsold+"小时"+minsold+"分"+seconds+"秒";
+}
+function setzero(i){
+if (i<10)
+{i="0" + i};
+return i;
+}
+show_date_time();
+</script>
+            </div>
+          
+
+          
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">1.</span> <span class="nav-text"><span id="zabbix-proxy&#x7684;&#x7528;&#x9014;&#x548C;&#x6784;&#x5EFA;&#x56FE;">Zabbix-proxy&#x7684;&#x7528;&#x9014;&#x548C;&#x6784;&#x5EFA;&#x56FE;</span></span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">2.</span> <span class="nav-text"><span id="&#x5B89;&#x88C5;mysql-55">&#x5B89;&#x88C5;Mysql 5.5</span></span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">3.</span> <span class="nav-text"><span id="&#x5B89;&#x88C5;zabbix-proxy">&#x5B89;&#x88C5;Zabbix-proxy</span></span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">4.</span> <span class="nav-text"><span id="zabbix-proxy&#x7684;&#x914D;&#x7F6E;">Zabbix-proxy&#x7684;&#x914D;&#x7F6E;</span></span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">5.</span> <span class="nav-text"><span id="zabbix-server&#x7AEF;&#x7684;&#x914D;&#x7F6E;">Zabbix-server&#x7AEF;&#x7684;&#x914D;&#x7F6E;</span></span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">6.</span> <span class="nav-text"><span id="&#x88AB;&#x76D1;&#x63A7;&#x673A;&#x5668;&#x7684;&#x914D;&#x7F6E;">&#x88AB;&#x76D1;&#x63A7;&#x673A;&#x5668;&#x7684;&#x914D;&#x7F6E;</span></span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#undefined"><span class="nav-number">7.</span> <span class="nav-text"><span id="&#x53C2;&#x8003;&#x8D44;&#x6599;">&#x53C2;&#x8003;&#x8D44;&#x6599;</span></span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+	
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Chris Chan</span>
+
+  
+</div>
+
+
+  <div class="powered-by">
+  <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+    本站访客数:<span id="busuanzi_value_site_uv"></span>人
+  </span>
+  </div>
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.3</div>
+
+
+
+
+<div class="theme-info">
+  <div class="powered-by"></div>
+  <span class="post-count">博客全站共183.5k字</span>
+</div>
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <script type="text/javascript">
+      (function(d, s) {
+        var j, e = d.getElementsByTagName(s)[0];
+        if (typeof LivereTower === 'function') { return; }
+        j = d.createElement(s);
+        j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+        j.async = true;
+        e.parentNode.insertBefore(j, e);
+      })(document, 'script');
+    </script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("AiDjHC7wEwetLRd5XcWOIHHW-gzGzoHsz", "DNqGFHw3ihwD4viuyQM5xHvE");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+  <script type="text/javascript">
+  wpac_init = window.wpac_init || [];
+  wpac_init.push({widget: 'Rating', id: 8956,
+    el: 'wpac-rating',
+    color: 'f79533'
+  });
+  (function() {
+    if ('WIDGETPACK_LOADED' in window) return;
+    WIDGETPACK_LOADED = true;
+    var mc = document.createElement('script');
+    mc.type = 'text/javascript';
+    mc.async = true;
+    mc.src = '//embed.widgetpack.com/widget.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+  })();
+  </script>
+
+
+  
+
+  
+
+  
+
+  
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas{
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity:0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+const loadScript = function loadScript(c,b){var a=document.createElement("script");a.type="text/javascript";"undefined"!=typeof b&&(a.readyState?a.onreadystatechange=function(){if("loaded"==a.readyState||"complete"==a.readyState)a.onreadystatechange=null,b()}:a.onload=function(){b()});a.src=c;document.body.appendChild(a)};
+(function(){
+  if((typeof(device) != 'undefined') && (device.mobile())){
+    document.getElementById("live2dcanvas").style.width = '75px';
+    document.getElementById("live2dcanvas").style.height = '150px';
+  }else
+    if (typeof(device) === 'undefined') console.error('Cannot find current-device script.');
+  loadScript("/live2d/script.js", function(){loadlive2d("live2dcanvas", "/live2d/assets/z16.model.json", 0.5);});
+})();
+</script>
+
+</body>
+</html>
+<!-- 页面点击小红心 -->
+<script type="text/javascript" src="/js/src/love.js"></script>
